@@ -68,4 +68,9 @@ dependencies {
 //    Room
     implementation 'androidx.room:room-runtime:2.4.2'
     kapt 'androidx.room:room-compiler:2.4.2'
+
+    // Recycle View
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    // For control over item selection of both touch and mouse driven selection
+    implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
 }

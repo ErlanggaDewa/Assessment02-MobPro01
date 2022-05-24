@@ -18,22 +18,19 @@ class HitungFragment : Fragment() {
         fun newInstance() = HitungFragment()
     }
 
-    private lateinit var viewModel: HitungViewModel
     private lateinit var binding: FragmentHitungBinding
+
+    private val viewModel: HitungViewModel by lazy {
+        val db = ZakatDatabase.getInstance(requireContext())
+        val factory = HitungViewModelFactory(db.dao)
+        ViewModelProvider(this, factory)[HitungViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_hitung, container, false)
-
-        val application = requireNotNull(this.activity).application
-
-        val dataSource = ZakatDatabase.getInstance(application).dao
-
-        val viewModelFactory = HitungViewModelFactory(dataSource, application)
-
-        viewModel = ViewModelProvider(this, viewModelFactory)[HitungViewModel::class.java]
 
         binding.hitung.setOnClickListener { hitungZakat() }
         binding.reset.setOnClickListener { resetField() }
@@ -55,8 +52,7 @@ class HitungFragment : Fragment() {
 
     private fun getShareIntent(): Intent {
         val shareIntent = Intent(Intent.ACTION_SEND)
-        val message: String
-        message = outputShareText()
+        val message: String = outputShareText()
 
         shareIntent.setType("text/plain")
             .putExtra(

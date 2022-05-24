@@ -7,12 +7,11 @@ import org.d3if1053.hitungzakatpenghasilan.db.ZakatDao
 
 class HitungViewModelFactory(
     private val dataSource: ZakatDao,
-    private val application: Application
 ) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HitungViewModel::class.java)) {
-            return HitungViewModel(dataSource, application) as T
+            return HitungViewModel(dataSource) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

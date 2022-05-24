@@ -1,13 +1,17 @@
 package org.d3if1053.hitungzakatpenghasilan.ui.hitung
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.d3if1053.hitungzakatpenghasilan.db.ZakatDao
+import org.d3if1053.hitungzakatpenghasilan.db.ZakatEntity
 import org.d3if1053.hitungzakatpenghasilan.model.ZakatModel
 
-class HitungViewModel(val database: ZakatDao, application: Application) :
-    AndroidViewModel(application) {
+class HitungViewModel(val database: ZakatDao) :
+    ViewModel() {
     var zakatModel: ZakatModel = ZakatModel()
 
     init {
@@ -21,10 +25,24 @@ class HitungViewModel(val database: ZakatDao, application: Application) :
 
     fun isPayZakat(hargaEmas: String, penghasilan: String, bonus: String): Boolean {
         val nisab = (hargaEmas.toFloat() * 85) / 12;
+        var totalZakat: Long = 0
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val dataZakat = ZakatEntity(
+                    hargaEmas = hargaEmas.toLong(),
+                    gajiBulanan = penghasilan.toLong(),
+                    bonusGaji = bonus.toLong(),
+                    totalZakat = totalZakat
+                )
+                database.insert(dataZakat)
+            }
+        }
         if (penghasilan.toFloat() + bonus.toDouble() >= nisab) {
-            zakatModel.totalZakat = ((penghasilan.toDouble() + bonus.toDouble()) * 0.025).toLong()
+            totalZakat = ((penghasilan.toDouble() + bonus.toDouble()) * 0.025).toLong()
+            zakatModel.totalZakat = totalZakat
             return true
         }
+
         return false
     }
 

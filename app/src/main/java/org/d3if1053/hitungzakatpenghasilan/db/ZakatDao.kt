@@ -9,12 +9,15 @@ import androidx.room.Query
 @Dao
 interface ZakatDao {
     @Insert
-    fun insert(amoeba: ZakatEntity)
+    fun insert(zakat: ZakatEntity)
 
-    @Query("SELECT * FROM zakat ORDER BY id")
-    fun getLastBmi(): LiveData<List<ZakatEntity>>
+    @Query("SELECT * FROM zakat")
+    fun getData(): LiveData<List<ZakatEntity>>
+
+    @Query("DELETE FROM zakat")
+    fun clearData()
 
     @Delete
-    fun clearData(amoeba: ZakatEntity)
+    fun deleteData(zakat: ZakatEntity)
 
 }

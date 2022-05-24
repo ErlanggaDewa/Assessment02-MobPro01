@@ -5,4 +5,8 @@
         android:id="@+id/rulesFragment"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:title="@string/penjelasan_title" />
+    <item
+        android:id="@+id/historyFragment"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="@string/history_title" />
 </menu>
