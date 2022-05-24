@@ -23,20 +23,29 @@ class HitungViewModel(val database: ZakatDao) :
         Log.i("HitungViewModel", "HitungViewModel destroyed!")
     }
 
-    fun isPayZakat(hargaEmas: String, penghasilan: String, bonus: String): Boolean {
+    fun isPayZakat(
+        hargaEmas: String,
+        penghasilan: String,
+        bonus: String,
+        savingStatus: Boolean
+    ): Boolean {
         val nisab = (hargaEmas.toFloat() * 85) / 12;
         var totalZakat: Long = 0
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val dataZakat = ZakatEntity(
-                    hargaEmas = hargaEmas.toLong(),
-                    gajiBulanan = penghasilan.toLong(),
-                    bonusGaji = bonus.toLong(),
-                    totalZakat = totalZakat
-                )
-                database.insert(dataZakat)
+
+        if (savingStatus) {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    val dataZakat = ZakatEntity(
+                        hargaEmas = hargaEmas.toLong(),
+                        gajiBulanan = penghasilan.toLong(),
+                        bonusGaji = bonus.toLong(),
+                        totalZakat = totalZakat
+                    )
+                    database.insert(dataZakat)
+                }
             }
         }
+
         if (penghasilan.toFloat() + bonus.toDouble() >= nisab) {
             totalZakat = ((penghasilan.toDouble() + bonus.toDouble()) * 0.025).toLong()
             zakatModel.totalZakat = totalZakat

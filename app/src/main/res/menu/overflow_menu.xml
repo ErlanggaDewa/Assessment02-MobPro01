@@ -3,5 +3,10 @@
 
     <item
         android:id="@+id/aboutFragment"
+        android:icon="@android:drawable/btn_star_big_on"
         android:title="@string/about_app_title" />
+    <item
+        android:id="@+id/save_data_manager"
+        android:icon="@android:drawable/stat_notify_sync"
+        android:title="@string/save_title" />
 </menu>

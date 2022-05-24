@@ -6,9 +6,14 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import kotlinx.coroutines.launch
 import org.d3if1053.hitungzakatpenghasilan.R
+import org.d3if1053.hitungzakatpenghasilan.data.SettingDataStore
+import org.d3if1053.hitungzakatpenghasilan.data.dataStore
 import org.d3if1053.hitungzakatpenghasilan.databinding.FragmentHitungBinding
 import org.d3if1053.hitungzakatpenghasilan.db.ZakatDatabase
 
@@ -18,7 +23,9 @@ class HitungFragment : Fragment() {
         fun newInstance() = HitungFragment()
     }
 
+    private lateinit var savingDataStore: SettingDataStore
     private lateinit var binding: FragmentHitungBinding
+    private var isSavingStatus = true
 
     private val viewModel: HitungViewModel by lazy {
         val db = ZakatDatabase.getInstance(requireContext())
@@ -44,10 +51,19 @@ class HitungFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        savingDataStore = SettingDataStore(requireContext().dataStore)
+        savingDataStore.preferenceFlow.asLiveData().observe(viewLifecycleOwner) { value ->
+            isSavingStatus = value
+            activity?.invalidateOptionsMenu()
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.overflow_menu, menu)
         inflater.inflate(R.menu.share_menu, menu)
+        setSaveTitle(menu.findItem(R.id.save_data_manager))
     }
 
     private fun getShareIntent(): Intent {
@@ -82,12 +98,25 @@ class HitungFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.share -> shareSuccess()
+            R.id.save_data_manager -> toggleSaving(item)
         }
         return NavigationUI.onNavDestinationSelected(
             item,
             requireView().findNavController()
         )
                 || super.onOptionsItemSelected(item)
+    }
+
+    private fun toggleSaving(item: MenuItem) {
+        isSavingStatus = !isSavingStatus
+        lifecycleScope.launch {
+            savingDataStore.saveSavingToPreferencesStore(
+                isSavingStatus,
+                requireContext()
+            )
+        }
+        setSaveTitle(item)
+
     }
 
     private fun hitungZakat() {
@@ -100,7 +129,7 @@ class HitungFragment : Fragment() {
         if (validateUserInput(hargaEmas, penghasilan, bonus)) return
 
 
-        updateOutputViewModel(viewModel.isPayZakat(hargaEmas, penghasilan, bonus))
+        updateOutputViewModel(viewModel.isPayZakat(hargaEmas, penghasilan, bonus, isSavingStatus))
         updateUI()
 
     }
@@ -159,4 +188,11 @@ class HitungFragment : Fragment() {
         binding.outputZakat.text = null
     }
 
+    private fun setSaveTitle(menuItem: MenuItem) {
+        if (isSavingStatus) {
+            menuItem.setTitle(R.string.save_title)
+        } else {
+            menuItem.setTitle(R.string.unsave_title)
+        }
+    }
 }

@@ -25,5 +25,7 @@
     <string name="konfirmasi_hapus">Yakin menghapus data ?</string>
     <string name="hapus">Hapus</string>
     <string name="batal">Batal</string>
+    <string name="save_title">Mode Penyamaran Nonaktif</string>
+    <string name="unsave_title">Mode Penyamaran Aktif</string>
 
 </resources>
