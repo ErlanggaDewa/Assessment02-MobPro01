@@ -2,5 +2,7 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/delius_swash_caps</item>
+        <item>@font/doppio_one</item>
+        <item>@font/source_sans_pro_extralight</item>
     </array>
 </resources>
