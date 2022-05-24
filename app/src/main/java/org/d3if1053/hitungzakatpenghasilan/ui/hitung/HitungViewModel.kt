@@ -1,10 +1,13 @@
 package org.d3if1053.hitungzakatpenghasilan.ui.hitung
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import org.d3if1053.hitungzakatpenghasilan.db.ZakatDao
 import org.d3if1053.hitungzakatpenghasilan.model.ZakatModel
 
-class HitungViewModel : ViewModel() {
+class HitungViewModel(val database: ZakatDao, application: Application) :
+    AndroidViewModel(application) {
     var zakatModel: ZakatModel = ZakatModel()
 
     init {

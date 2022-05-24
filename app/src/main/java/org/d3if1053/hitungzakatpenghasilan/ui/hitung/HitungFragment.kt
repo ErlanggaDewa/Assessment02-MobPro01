@@ -2,7 +2,6 @@ package org.d3if1053.hitungzakatpenghasilan.ui.hitung
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -11,6 +10,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import org.d3if1053.hitungzakatpenghasilan.R
 import org.d3if1053.hitungzakatpenghasilan.databinding.FragmentHitungBinding
+import org.d3if1053.hitungzakatpenghasilan.db.ZakatDatabase
 
 class HitungFragment : Fragment() {
 
@@ -25,10 +25,16 @@ class HitungFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.i("HitungFragment", "Called ViewModelProvider")
-        viewModel = ViewModelProvider(this)[HitungViewModel::class.java]
-
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_hitung, container, false)
+
+        val application = requireNotNull(this.activity).application
+
+        val dataSource = ZakatDatabase.getInstance(application).dao
+
+        val viewModelFactory = HitungViewModelFactory(dataSource, application)
+
+        viewModel = ViewModelProvider(this, viewModelFactory)[HitungViewModel::class.java]
+
         binding.hitung.setOnClickListener { hitungZakat() }
         binding.reset.setOnClickListener { resetField() }
 
